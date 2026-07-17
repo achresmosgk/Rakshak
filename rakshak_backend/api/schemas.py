@@ -1,0 +1,13 @@
+from pydantic import BaseModel, Field
+
+class DetectionEvent(BaseModel):
+    device_id: str
+    species: str = "unknown"
+    confidence: float = Field(ge=0.0, le=1.0)
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
+
+class DeviceCreate(BaseModel):
+    device_id: str
+    location_name: str
+    highway_km_marker: float | None = None
