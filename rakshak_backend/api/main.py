@@ -2,6 +2,8 @@
 import sqlite3
 from fastapi import FastAPI
 from pydantic import BaseModel,Field
+from fastapi import HTTPException
+
 
 app = FastAPI()
 
@@ -60,5 +62,43 @@ def create_detection(event:Detection):
 def list_detections():
     conn = get_db()
     rows = conn.execute("SELECT * FROM detections ORDER BY id DESC").fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+@app.get("/detections/{detection_id}")
+def get_detection(detection_id: int):
+    conn = get_db()
+    row = conn.execute(
+        "SELECT * FROM detections WHERE id = ?", (detection_id,)
+    ).fetchone()
+    conn.close()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Detection not found")
+    return dict(row)
+
+class DeviceCreate(BaseModel):
+    device_id: str
+    location_name: str
+    highway_km_marker: float | None = None
+
+@app.post("/devices", status_code=201)
+def register_device(device: DeviceCreate):
+    conn = get_db()
+    try:
+        conn.execute(
+            "INSERT INTO devices (device_id, location_name, highway_km_marker) VALUES (?, ?, ?)",
+            (device.device_id, device.location_name, device.highway_km_marker),
+        )
+        conn.commit()
+    except sqlite3.IntegrityError:
+        conn.close()
+        raise HTTPException(status_code=400, detail="Device already registered")
+    conn.close()
+    return device
+
+@app.get("/devices")
+def list_devices():
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM devices ORDER BY device_id").fetchall()
     conn.close()
     return [dict(row) for row in rows]
