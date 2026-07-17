@@ -1,4 +1,14 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
+
+
+class UserCreate(BaseModel):
+    name: str
+    email: EmailStr
+    password: str = Field(min_length=8)
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
 class DetectionEvent(BaseModel):
     device_id: str
