@@ -1,5 +1,6 @@
 import sqlite3
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from deps import get_current_user
 
 from db import get_db
 from schemas import DetectionEvent
@@ -20,7 +21,7 @@ def create_detection(event: DetectionEvent):
     return {"id": new_id, **event.model_dump()}
 
 @router.get("")
-def list_detections():
+def list_detections(current_user: dict = Depends(get_current_user)):
     conn = get_db()
     rows = conn.execute("SELECT * FROM detections ORDER BY id DESC").fetchall()
     conn.close()

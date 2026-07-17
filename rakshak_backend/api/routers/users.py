@@ -1,8 +1,9 @@
 import sqlite3
 from fastapi import APIRouter, HTTPException
-
+import secrets
 from db import get_db
 from schemas import UserCreate, UserLogin
+from utils import hash_password, check_password
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -12,7 +13,7 @@ def create_user(user: UserCreate):
     try:
         cursor = conn.execute(
             "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-            (user.name, user.email, user.password),
+            (user.name, user.email, hash_password(user.password)),
         )
         conn.commit()
         new_id = cursor.lastrowid
@@ -33,7 +34,18 @@ def login(credentials: UserLogin):
     if row is None:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    if credentials.password != row["password"]:
+    if not check_password(credentials.password , row["password"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    token = secrets.token_urlsafe(32)
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO tokens (token, user_id) VALUES (?, ?)",
+        (token, row["id"]),
+    )
+    conn.commit()
+    conn.close()
 
-    return {"message": "logged in", "user_id": row["id"], "name": row["name"]}
+    
+
+    return {"token": token, "user_id": row["id"], "name": row["name"]}
