@@ -1,14 +1,15 @@
 from fastapi import FastAPI
 
 from db import init_db
-from routers import detections, devices
+from routers.detections import router as detections_router
+from routers.devices import router as devices_router
 
 app = FastAPI(title="Nilgai Alert API")
 
 init_db()
 
-app.include_router(detections.router)
-app.include_router(devices.router)
+app.include_router(detections_router)
+app.include_router(devices_router)
 
 @app.get("/health")
 def health():
