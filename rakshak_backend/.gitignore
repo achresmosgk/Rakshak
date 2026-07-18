@@ -1,0 +1,54 @@
+# ─── Python ───────────────────────────────
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ─── Secrets & config ─────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ─── Databases ────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# ─── Node / React (for later) ─────────────
+node_modules/
+dist/
+build/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ─── ML models & media (for later) ────────
+*.tflite
+*.pth
+*.pt
+*.mp4
+*.avi
+data/raw/
+data/processed/
+
+# ─── Editors & OS ─────────────────────────
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Logs ─────────────────────────────────
+*.log
+logs/

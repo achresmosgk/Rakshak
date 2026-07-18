@@ -1,4 +1,21 @@
 import bcrypt
+import jwt
+from datetime import datetime, timedelta, timezone
+
+SECRET_KEY = "dev-secret-change-me"   # moves to .env next rung
+ALGORITHM = "HS256"
+
+def create_access_token(user_id: int) -> str:
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(user_id),
+        "iat": now,
+        "exp": now + timedelta(minutes=30),
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def decode_access_token(token: str) -> dict:
+    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
 def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()

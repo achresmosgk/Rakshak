@@ -21,6 +21,7 @@ def init_db():
     conn.execute("""
         CREATE TABLE IF NOT EXISTS devices (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            api_key TEXT UNIQUE NOT NULL,
             device_id TEXT UNIQUE NOT NULL,
             location_name TEXT NOT NULL,
             highway_km_marker REAL,

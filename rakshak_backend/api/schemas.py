@@ -11,7 +11,6 @@ class UserLogin(BaseModel):
     password: str
 
 class DetectionEvent(BaseModel):
-    device_id: str
     species: str = "unknown"
     confidence: float = Field(ge=0.0, le=1.0)
     latitude: float = Field(ge=-90, le=90)
