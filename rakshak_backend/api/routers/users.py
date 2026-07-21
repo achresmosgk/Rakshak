@@ -1,9 +1,11 @@
 import sqlite3
-from fastapi import APIRouter, HTTPException
-import secrets
+from datetime import datetime, timezone
+from fastapi import APIRouter, HTTPException, Depends
 from db import get_db
 from schemas import UserCreate, UserLogin
-from utils import hash_password, check_password
+from utils import hash_password, check_password, create_access_token
+from deps import get_current_user
+from redis_client import revoke_jti
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -36,16 +38,13 @@ def login(credentials: UserLogin):
 
     if not check_password(credentials.password , row["password"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    
-    token = secrets.token_urlsafe(32)
-    conn = get_db()
-    conn.execute(
-        "INSERT INTO tokens (token, user_id) VALUES (?, ?)",
-        (token, row["id"]),
-    )
-    conn.commit()
-    conn.close()
 
-    
+    token = create_access_token(row["id"])
 
     return {"token": token, "user_id": row["id"], "name": row["name"]}
+
+@router.post("/logout")
+def logout(current_user: dict = Depends(get_current_user)):
+    ttl_seconds = int(current_user["exp"] - datetime.now(timezone.utc).timestamp())
+    revoke_jti(current_user["jti"], ttl_seconds)
+    return {"message": "logged out"}

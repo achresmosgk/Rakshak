@@ -28,12 +28,12 @@ def create_device(event: DeviceCreate):
 @router.get("")
 def list_devices():
     conn = get_db()
-    rows = conn.execute("SELECT * FROM devices WHERE device_id = ?").fetchall()
+    rows = conn.execute("SELECT * FROM devices").fetchall()
     conn.close()
     return [dict(row) for row in rows]
 
 @router.get("/{device_id}")
-def get_detection(device_id: int):
+def get_device(device_id: str):
     conn = get_db()
     row = conn.execute(
         "SELECT * FROM devices WHERE device_id = ?", (device_id,)

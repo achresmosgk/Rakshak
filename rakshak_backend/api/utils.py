@@ -1,5 +1,6 @@
 import bcrypt
 import jwt
+import uuid
 from datetime import datetime, timedelta, timezone
 
 SECRET_KEY = "dev-secret-change-me"   # moves to .env next rung
@@ -9,6 +10,7 @@ def create_access_token(user_id: int) -> str:
     now = datetime.now(timezone.utc)
     payload = {
         "sub": str(user_id),
+        "jti": uuid.uuid4().hex,
         "iat": now,
         "exp": now + timedelta(minutes=30),
     }
