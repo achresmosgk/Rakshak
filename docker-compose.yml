@@ -1,0 +1,39 @@
+# Generic local/self-hosted stack — not tied to any specific cloud provider.
+# Before running:
+#   1. cp rakshak_backend/api/.env.example rakshak_backend/api/.env  (fill in SECRET_KEY)
+#   2. cp frontend/.env.example frontend/.env                       (fill in VITE_ORS_KEY)
+#   docker compose up --build
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  backend:
+    build: ./rakshak_backend
+    env_file:
+      - ./rakshak_backend/api/.env
+    environment:
+      # Overrides whatever's in .env so the backend always reaches the
+      # redis service by its compose network name, not localhost.
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - backend_data:/app/api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: ${VITE_API_BASE:-http://localhost:8000}
+        VITE_ORS_KEY: ${VITE_ORS_KEY:-}
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  backend_data:
