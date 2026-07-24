@@ -1,6 +1,8 @@
 import redis  # type: ignore[import]
 
-client = redis.Redis(host="localhost", port=6379, decode_responses=True)
+from settings import REDIS_URL
+
+client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
 
 def revoke_jti(jti: str, ttl_seconds: int) -> None:
     if ttl_seconds > 0:

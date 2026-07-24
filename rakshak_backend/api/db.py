@@ -1,7 +1,12 @@
 import sqlite3
 
+from settings import DATABASE_PATH
+
+# NOTE: sqlite is fine for a single small deployment. Moving to Postgres for
+# multi-instance/production use is a separate migration (schema + query
+# syntax + connection pooling all change) — not done here, just flagged.
 def get_db():
-    conn = sqlite3.connect("nilgai.db")
+    conn = sqlite3.connect(DATABASE_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -21,10 +26,12 @@ def init_db():
     conn.execute("""
         CREATE TABLE IF NOT EXISTS devices (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            api_key TEXT UNIQUE NOT NULL,
             device_id TEXT UNIQUE NOT NULL,
             location_name TEXT NOT NULL,
+            latitude REAL NOT NULL,
+            longitude REAL NOT NULL,
             highway_km_marker REAL,
+            api_key TEXT UNIQUE NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)

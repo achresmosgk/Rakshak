@@ -36,13 +36,34 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_
     user["exp"] = payload["exp"]
     return user
 
+def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)):
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Missing token")
+
+    try:
+        payload = decode_access_token(credentials.credentials)
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    if is_revoked(payload["jti"]):
+        raise HTTPException(status_code=401, detail="Token revoked")
+
+    if payload.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    return {"jti": payload["jti"], "exp": payload["exp"]}
+
 def get_current_device(x_api_key: str = Header(None)):
     if x_api_key is None:
         raise HTTPException(status_code=401, detail="Missing API key")
 
     conn = get_db()
     row = conn.execute(
-        "SELECT id, device_id, location_name FROM devices WHERE api_key = ?", (x_api_key,)
+        """SELECT id, device_id, location_name, latitude, longitude
+           FROM devices WHERE api_key = ?""",
+        (x_api_key,),
     ).fetchone()
     conn.close()
 
