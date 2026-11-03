@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchRoute, geocode, isRoutingConfigured } from "./routing";
-import DemoMode from "./components/DemoMode";
+import DemoMode from "./components/demo_mode";
 
 function useSuggestions(query, skip) {
   const [suggestions, setSuggestions] = useState([]);
