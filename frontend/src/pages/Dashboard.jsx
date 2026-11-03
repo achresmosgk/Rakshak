@@ -318,7 +318,7 @@ export default function Dashboard() {
                     marginTop: 8,
                   }}
                 >
-                  🧪 SIMULATION MODE
+                  Screening in progress
                 </p>
               )}
 
