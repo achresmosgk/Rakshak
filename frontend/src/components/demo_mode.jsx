@@ -32,7 +32,7 @@ export default function DemoMode() {
         throw new Error(data.detail || "Failed to start demo");
       }
 
-      setMessage("Demo triggered!");
+      setMessage(".");
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -49,7 +49,7 @@ export default function DemoMode() {
         disabled={loading}
         style={{ borderColor: "var(--danger)", color: "var(--danger)" }}
       >
-        {loading ? "Starting demo…" : "🧪 Run Demo"}
+        {loading ? "Starting…" : "Run"}
       </button>
 
       {message && (
