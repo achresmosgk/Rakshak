@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchRoute, geocode, isRoutingConfigured } from "./routing";
+import DemoMode from "./components/DemoMode";
 
 function useSuggestions(query, skip) {
   const [suggestions, setSuggestions] = useState([]);
@@ -197,6 +198,7 @@ export default function RoutePanel({ myPosition, onRouteChange }) {
         <button type="button" className="btn btn-primary" onClick={handleGetRoute} disabled={loading}>
           {loading ? "Routing…" : "Get route"}
         </button>
+        <DemoMode />
         {(start || end || summary) && (
           <button type="button" className="btn btn-ghost" onClick={clearRoute}>
             Clear
