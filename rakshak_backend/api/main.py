@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from db import init_db
+from routers.demo import router as demo_router
 from settings import CORS_ORIGINS
 from routers.admin import router as admin_router
 from routers.detections import router as detections_router
@@ -24,6 +25,7 @@ app.add_middleware(
 init_db()
 
 app.include_router(admin_router)
+app.include_router(demo_router)
 app.include_router(detections_router)
 app.include_router(devices_router)
 app.include_router(users_router)
